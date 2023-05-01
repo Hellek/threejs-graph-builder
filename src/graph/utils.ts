@@ -1,5 +1,5 @@
-import { BufferGeometry, Camera, Color, Line, LineBasicMaterial, PerspectiveCamera, Points, PointsMaterial, Scene, Vector3, WebGLRenderer } from "three"
-import { Coordinates } from "./getData"
+import { BufferGeometry, Camera, Color, Float32BufferAttribute, Line, LineBasicMaterial, PerspectiveCamera, Points, PointsMaterial, Scene, SRGBColorSpace, Vector3, WebGLRenderer } from "three"
+import { ColorsData, Coordinates } from "./getData"
 
 export const getMin = (arr: number[], other = Number.MAX_VALUE) => {
   let m = Number.MAX_VALUE
@@ -37,14 +37,12 @@ export const getCenter = (scatter: Coordinates) => {
 }
 
 export const getInitials = ({
-  screenWidth,
-  screenHeight,
   container,
 }: {
-  screenWidth: number
-  screenHeight: number
   container: HTMLDivElement
-}) => {
+  }) => {
+  const screenWidth = window.innerWidth
+  const screenHeight = window.innerHeight
   const VIEW_ANGLE = 45
   const ASPECT = screenWidth / screenHeight
   const NEAR = 0.1
@@ -57,7 +55,7 @@ export const getInitials = ({
   scene.add(camera);
 
   const renderer = new WebGLRenderer({ antialias: true })
-  renderer.setSize(screenWidth, screenHeight);
+  renderer.setSize(container.offsetWidth, container.offsetHeight);
   container.appendChild(renderer.domElement);
 
   return {
@@ -93,24 +91,27 @@ export const drawTree = (scene: Scene, tree: Coordinates) => {
   }
 }
 
-export const drawScatter = (scene: Scene, scatter: Coordinates) => {
+export const drawScatter = (scene: Scene, scatter: Coordinates, colors: ColorsData) => {
+  const geometry = new BufferGeometry()
+  const coloring = []
+
   const material = new PointsMaterial({
-    color: 'yellow',
-    size: 15,
-    sizeAttenuation: true // what is it?
+    size: 25,
+    vertexColors: true,
   });
 
-  const points = []
+  const positions = []
 
   for (let i = 0; i < scatter.x.length; i += 1) {
-    points.push(new Vector3(
-      scatter.x[i],
-      scatter.y[i],
-      0, // scatter.z[i],
-    ))
+    positions.push(scatter.x[i], scatter.y[i], 0)
+    coloring.push(colors.r[i] / 255, colors.g[i] / 255, colors.b[i] / 255);
   }
 
-  const geometry = new BufferGeometry().setFromPoints(points)
-  const pointCloud = new Points(geometry, material)
-  scene.add(pointCloud)
+  geometry.setAttribute('position', new Float32BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new Float32BufferAttribute(coloring, 3));
+
+  geometry.computeBoundingSphere();
+
+  const points = new Points(geometry, material)
+  scene.add(points)
 }

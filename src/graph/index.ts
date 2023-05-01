@@ -1,20 +1,16 @@
-import { getData } from './getData';
+import { getColors, getData } from './getData';
 import { drawScatter, drawTree, getInitials, setCamera } from './utils';
 
 const { scatter, tree } = getData()
+const colors = getColors()
 
 export const initGraph = (container: HTMLDivElement) => {
-  const screenWidth = window.innerWidth
-  const screenHeight = window.innerHeight
-
   const { scene, camera, renderer } = getInitials({
-    screenHeight,
-    screenWidth,
     container,
   })
 
   drawTree(scene, tree)
-  drawScatter(scene, scatter)
+  drawScatter(scene, scatter, colors)
   setCamera(scatter, camera)
 
   const animate = () => {
