@@ -76,7 +76,7 @@ const data: { scatter: Coordinates, tree: Coordinates } = {
   }
 }
 
-export const getColors = () => ({
+export const getColors = (): ColorsData => ({
   r: [33, 68, 70, 199, 253, 63, 129, 35, 31, 68],
   g: [141, 55, 49, 224, 231, 71, 211, 135, 148, 1],
   b: [140, 129, 126, 31, 36, 136, 76, 141, 139, 84],

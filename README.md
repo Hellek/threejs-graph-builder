@@ -4,10 +4,10 @@
 - Set initials
 - Draw tree
 - Draw scatter
+- Custom points coloring
 
 ### Todo
 - Drag
 - Zoom
-- Custom points coloring
 - Point shape
 - lasso

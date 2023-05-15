@@ -25,10 +25,10 @@ body {
 }
 
 #header {
-  min-height: 32px;
+  min-height: 37px;
   padding: 8px 24px;
   background-color: #333;
-  /* border-bottom: 1px solid #ccc; */
+  border-bottom: 1px solid #434343;
 }
 
 #app {

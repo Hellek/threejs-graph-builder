@@ -8,7 +8,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "yarn && vite --open",
+    "serve": "yarn && vite --open",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
