@@ -9,5 +9,6 @@
 ### Todo
 - Drag
 - Zoom
+- Fix: window resize stretch graph
 - Point shape
 - lasso
