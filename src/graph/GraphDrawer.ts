@@ -4,7 +4,7 @@ import {
   Float32BufferAttribute,
   Line,
   LineBasicMaterial,
-  PerspectiveCamera,
+  OrthographicCamera,
   Points,
   PointsMaterial,
   Scene,
@@ -23,8 +23,7 @@ interface GDConstructorProps {
 
 export class GraphDrawer {
   container: HTMLDivElement
-  aspect: number
-  camera: PerspectiveCamera
+  camera: OrthographicCamera
   scene: Scene
   renderer: WebGLRenderer
   // controls: MapControls
@@ -40,8 +39,7 @@ export class GraphDrawer {
     container.style.overflow = 'hidden' // HACK Remove unexpected scrollbars
 
     const { x, y, z } = this.getCenter(scatter) // initial center
-    this.aspect = this.getAspect()
-    this.camera = new PerspectiveCamera(45, this.aspect)
+    this.camera = new OrthographicCamera(-x * 1.1, x * 1.1, y * 1.1, -y * 1.1)
     this.camera.position.set(x, y, z);
 
     this.scene = new Scene()
@@ -112,17 +110,12 @@ export class GraphDrawer {
   }
 
   onWindowResize = () => {
-    this.camera.aspect = this.getAspect()
     this.camera.updateProjectionMatrix()
     this.setRendererSize()
   }
 
   setRendererSize() {
     this.renderer.setSize(this.container.offsetWidth, this.container.offsetHeight);
-  }
-
-  getAspect() {
-    return this.container.offsetWidth / this.container.offsetHeight
   }
 
   getMinMax(arr: number[]) {

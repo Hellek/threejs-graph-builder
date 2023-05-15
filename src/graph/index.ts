@@ -5,7 +5,7 @@ const { scatter, tree } = getData()
 const colors = getColors()
 
 export const initGraph = (container: HTMLDivElement) => {
-  const graphDrawer = new GraphDrawer({
+  new GraphDrawer({
     container,
     tree,
     scatter,
