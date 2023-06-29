@@ -1,9 +1,9 @@
-export interface Coordinates {
+export interface PointsCoordinates {
   x: number[]
   y: number[]
 }
 
-export interface ColorsData {
+export interface PointsColors {
   r: number[]
   g: number[]
   b: number[]
@@ -11,7 +11,7 @@ export interface ColorsData {
 
 export const getData = () => data
 
-const data: { scatter: Coordinates, tree: Coordinates } = {
+const data: { scatter: PointsCoordinates, tree: PointsCoordinates } = {
   scatter: {
     x: [368.1782931089401, 750, 0, 144.98137682676315, 484.32330787181854, 683.0471456050873, 245.184525847435, 362.3467907309532, 591.6950404644012, 60.95297634601593],
     y: [481.59487545490265, 335.2518752217293, 0, 374.3984252214432, 692.6582157611847, 444.7370320558548, 585.761770606041, 750, 574.0793645381927, 166.6601300239563]
@@ -76,7 +76,7 @@ const data: { scatter: Coordinates, tree: Coordinates } = {
   }
 }
 
-export const getColors = (): ColorsData => ({
+export const getColors = (): PointsColors => ({
   r: [33, 68, 70, 199, 253, 63, 129, 35, 31, 68],
   g: [141, 55, 49, 224, 231, 71, 211, 135, 148, 1],
   b: [140, 129, 126, 31, 36, 136, 76, 141, 139, 84],

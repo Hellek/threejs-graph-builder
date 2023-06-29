@@ -8,17 +8,17 @@ import {
   Points,
   PointsMaterial,
   Scene,
+  Vector2,
   Vector3,
   WebGLRenderer,
 } from "three"
-import { ColorsData, Coordinates } from "./getData"
-// import { MapControls } from 'three/examples/jsm/controls/MapControls';
+import { PointsColors, PointsCoordinates } from "./getData"
 
 interface GDConstructorProps {
   container: HTMLDivElement
-  tree: Coordinates
-  scatter: Coordinates
-  colors: ColorsData,
+  tree: PointsCoordinates
+  scatter: PointsCoordinates
+  colors: PointsColors,
 }
 
 export class GraphDrawer {
@@ -27,8 +27,7 @@ export class GraphDrawer {
   camera: PerspectiveCamera
   scene: Scene
   renderer: WebGLRenderer
-  // controls: MapControls
-  readonly Z = 1000
+  readonly zMock = -1000
 
   constructor({
     container,
@@ -37,44 +36,56 @@ export class GraphDrawer {
     colors,
   }: GDConstructorProps) {
     this.container = container
-    container.style.overflow = 'hidden' // HACK Remove unexpected scrollbars
 
-    const { x, y, z } = this.getCenter(scatter) // initial center
+    // Set initial camera
+    const { x, y } = this.getCenter(scatter)
+    // const { max: maxZ } = this.getMinMax(scatter.z)
     this.aspect = this.getAspect()
-    this.camera = new PerspectiveCamera(45, this.aspect)
-    this.camera.position.set(x, y, z);
+    this.camera = new PerspectiveCamera(45, this.aspect, 0.1, 20000)
+    this.camera.position.set(x, y, this.zMock + 3000);
 
+    // Create scene
     this.scene = new Scene()
-    this.scene.background = new Color(0x222222);
+    this.scene.background = new Color(0x222222)
     this.scene.add(this.camera);
 
+    // Set renderer
     this.renderer = new WebGLRenderer({ antialias: true })
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.setRendererSize()
     container.appendChild(this.renderer.domElement);
 
-    // this.controls = new MapControls(this.camera, this.renderer.domElement);
+    // Configure controls
+    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    // this.controls.enablePan = false
+    // this.controls.enableRotate = false
+    // Switch pan to left mouse button
+    // this.controls.mouseButtons = { LEFT: MOUSE.PAN }
+    // this.controls.maxDistance = maxZ * 25
 
+    // Draw graph
     this.drawTree(tree)
     this.drawScatter(scatter, colors)
 
-    // this.controls.addEventListener('change', this.render);
-    window.addEventListener('resize', this.onWindowResize);
+    this.initListeners()
+  }
 
-    this.render()
+  initListeners() {
+    window.addEventListener('resize', this.onWindowResize);
+    // this.controls.addEventListener('change', this.render);
   }
 
   render = () => {
     this.renderer.render(this.scene, this.camera);
   }
 
-  drawTree(tree: Coordinates) {
+  drawTree(tree: PointsCoordinates) {
     const material = new LineBasicMaterial({ color: 0x666666 });
 
     for (let i = 0; i < tree.x.length; i += 2) {
       const points = [
-        new Vector3(tree.x[i], tree.y[i], 0),
-        new Vector3(tree.x[i + 1], tree.y[i + 1], 0),
+        new Vector3(tree.x[i], tree.y[i], this.zMock),
+        new Vector3(tree.x[i + 1], tree.y[i + 1], this.zMock),
       ]
 
       const geometry = new BufferGeometry().setFromPoints(points);
@@ -85,7 +96,7 @@ export class GraphDrawer {
     }
   }
 
-  drawScatter(scatter: Coordinates, colors: ColorsData) {
+  drawScatter(scatter: PointsCoordinates, colors: PointsColors) {
     const geometry = new BufferGeometry()
     const coloring = []
 
@@ -97,7 +108,7 @@ export class GraphDrawer {
     const positions = []
 
     for (let i = 0; i < scatter.x.length; i += 1) {
-      positions.push(scatter.x[i], scatter.y[i], 0)
+      positions.push(scatter.x[i], scatter.y[i], this.zMock)
       coloring.push(colors.r[i] / 255, colors.g[i] / 255, colors.b[i] / 255);
     }
 
@@ -111,6 +122,7 @@ export class GraphDrawer {
     this.scene.add(points)
   }
 
+  // TODO fix scrollbar artifacts and graph stretching/smashing
   onWindowResize = () => {
     this.camera.aspect = this.getAspect()
     this.camera.updateProjectionMatrix()
@@ -134,15 +146,13 @@ export class GraphDrawer {
     }
   }
 
-  getCenter(coord: Coordinates) {
+  getCenter(coord: PointsCoordinates) {
     const x = this.getMinMax(coord.x)
     const y = this.getMinMax(coord.y)
-    const z = this.getMinMax([this.Z])
 
-    return new Vector3(
+    return new Vector2(
       (x.min + x.max) / 2.0,
       (y.min + y.max) / 2.0,
-      (z.min + z.max) / 2.0,
     )
   }
 }

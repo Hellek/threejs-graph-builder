@@ -11,4 +11,6 @@ export const initGraph = (container: HTMLDivElement) => {
     scatter,
     colors,
   })
+
+  graphDrawer.render()
 }
